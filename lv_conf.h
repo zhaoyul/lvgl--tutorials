@@ -173,15 +173,14 @@
 
 #define LV_FONT_MONTSERRAT_28_COMPRESSED 0
 #define LV_FONT_DEJAVU_16_PERSIAN_HEBREW  0
-#define LV_FONT_SIMSUN_14_CJK             0
-#define LV_FONT_SIMSUN_16_CJK             0
+#define LV_FONT_SIMSUN_14_CJK             1
+#define LV_FONT_SIMSUN_16_CJK             1
 #define LV_FONT_UNSCII_8   0
 #define LV_FONT_UNSCII_16  0
-#define LV_FONT_CUSTOM_DECLARE
 
 #define LV_FONT_DEFAULT &lv_font_montserrat_14
 
-#define LV_FONT_FMT_TXT_LARGE   0
+#define LV_FONT_FMT_TXT_LARGE   1
 #define LV_USE_FONT_COMPRESSED  0
 #define LV_USE_FONT_PLACEHOLDER 1
 
@@ -391,6 +390,11 @@
 #define LV_USE_DEMO_TRANSFORM      0
 #define LV_USE_DEMO_SCROLL         0
 #define LV_USE_DEMO_VECTOR_GRAPHIC 0
+
+/* 声明 Noto Sans CJK 字体 */
+#define LV_FONT_CUSTOM_DECLARE \
+    LV_FONT_DECLARE(lv_font_noto_14_cjk) \
+    LV_FONT_DECLARE(lv_font_noto_16_cjk)
 
 /*--END OF LV_CONF_H--*/
 #endif  /* LV_CONF_H */

@@ -40,6 +40,8 @@ endif()
 add_executable(lvgl_demo
     main.c
     src/ui_demo.c
+    src/fonts/lv_font_noto_14_cjk.c
+    src/fonts/lv_font_noto_16_cjk.c
 )
 
 target_include_directories(lvgl_demo PRIVATE

@@ -57,9 +57,9 @@ typedef enum {
     EXAMPLE_TABVIEW_1,
 } tutorial_example_id_t;
 
-/* 教程页面保留官方英文控件命名，便于直接对照 LVGL 官网资料。 */
-#define CN_FONT_BODY  (&lv_font_montserrat_14)
-#define CN_FONT_TITLE (&lv_font_montserrat_20)
+/* 中文字体：使用 Noto Sans CJK 字体 */
+#define CN_FONT_BODY  (&lv_font_noto_14_cjk)
+#define CN_FONT_TITLE (&lv_font_noto_16_cjk)
 
 /* ─── 通用辅助函数 ─────────────────────────────────────────────────────── */
 
@@ -147,7 +147,7 @@ static lv_obj_t *make_gauge(lv_obj_t *parent,
 
     /* 标题标签，位于圆弧下方 */
     lv_obj_t *ttl_lbl = make_label(card, title,
-                                    &lv_font_montserrat_14, C_SUBTEXT);
+                                    CN_FONT_BODY, C_SUBTEXT);
     lv_obj_align_to(ttl_lbl, arc, LV_ALIGN_OUT_BOTTOM_MID, 0, 8);
 
     /* 播放 0 → value 的进入动画 */
@@ -235,13 +235,13 @@ static void build_header(lv_obj_t *parent)
 
     /* 左侧标题 */
     lv_obj_t *dot = lv_label_create(bar);
-    lv_label_set_text(dot, LV_SYMBOL_WIFI "  LVGL Smart Dashboard");
-    lv_obj_set_style_text_font(dot, &lv_font_montserrat_20, 0);
+    lv_label_set_text(dot, LV_SYMBOL_WIFI "  智能仪表盘");
+    lv_obj_set_style_text_font(dot, CN_FONT_TITLE, 0);
     lv_obj_set_style_text_color(dot, C_ACCENT, 0);
     lv_obj_align(dot, LV_ALIGN_LEFT_MID, 0, 0);
 
     /* 右侧实时时钟 */
-    g_clock_label = make_label(bar, "--:--:--", &lv_font_montserrat_16, C_SUBTEXT);
+    g_clock_label = make_label(bar, "--:--:--", CN_FONT_BODY, C_SUBTEXT);
     lv_obj_align(g_clock_label, LV_ALIGN_RIGHT_MID, 0, 0);
     clock_timer_cb(NULL);                              /* 先立即刷新一次 */
     g_clock_timer = lv_timer_create(clock_timer_cb, 1000, NULL);
@@ -261,9 +261,9 @@ static void build_gauge_row(lv_obj_t *parent)
     lv_obj_set_layout(row, LV_LAYOUT_FLEX);
     lv_obj_set_flex_flow(row, LV_FLEX_FLOW_ROW);
 
-    make_gauge(row, "CPU Usage",   "65%",   65, C_ORANGE);
-    make_gauge(row, "RAM Usage",   "48%",   48, C_ACCENT);
-    make_gauge(row, "Temperature", "72 °C", 72, C_RED);
+    make_gauge(row, "CPU 使用率",   "65%",   65, C_ORANGE);
+    make_gauge(row, "内存使用",   "48%",   48, C_ACCENT);
+    make_gauge(row, "温度", "72 °C", 72, C_RED);
 }
 
 static void build_status_panel(lv_obj_t *parent)
@@ -273,8 +273,8 @@ static void build_status_panel(lv_obj_t *parent)
     lv_obj_set_style_pad_all(panel, 20, 0);
     lv_obj_set_style_bg_color(panel, C_CARD2, 0);
 
-    lv_obj_t *title = make_label(panel, "System Status",
-                                  &lv_font_montserrat_16, C_TEXT);
+    lv_obj_t *title = make_label(panel, "系统状态",
+                                  CN_FONT_TITLE, C_TEXT);
     lv_obj_align(title, LV_ALIGN_TOP_LEFT, 0, 0);
 
     /* 右侧状态卡片列表 */
@@ -285,10 +285,10 @@ static void build_status_panel(lv_obj_t *parent)
         uint32_t    color;
         int32_t     y;
     } items[] = {
-        { LV_SYMBOL_OK,       "System",    "Online",    0x3fb950, 36 },
-        { LV_SYMBOL_CHARGE,   "FPS",       "60 fps",    0x58a6ff, 76 },
-        { LV_SYMBOL_WIFI,     "Network",   "Excellent", 0xa371f7, 116 },
-        { LV_SYMBOL_SETTINGS, "Uptime",    "3h 42m",    0xd29922, 156 },
+        { LV_SYMBOL_OK,       "系统",    "运行中",    0x3fb950, 36 },
+        { LV_SYMBOL_CHARGE,   "帧率",    "60 fps",    0x58a6ff, 76 },
+        { LV_SYMBOL_WIFI,     "网络",   "信号优", 0xa371f7, 116 },
+        { LV_SYMBOL_SETTINGS, "运行时间",    "3小时42分",    0xd29922, 156 },
     };
 
     for (int i = 0; i < 4; i++) {
@@ -301,16 +301,16 @@ static void build_status_panel(lv_obj_t *parent)
         lv_obj_clear_flag(row, LV_OBJ_FLAG_SCROLLABLE);
 
         lv_obj_t *icon = make_label(row, items[i].icon,
-                                     &lv_font_montserrat_16,
+                                     CN_FONT_BODY,
                                      lv_color_hex(items[i].color));
         lv_obj_align(icon, LV_ALIGN_LEFT_MID, 0, 0);
 
         lv_obj_t *lbl = make_label(row, items[i].label,
-                                    &lv_font_montserrat_14, C_SUBTEXT);
+                                    CN_FONT_BODY, C_SUBTEXT);
         lv_obj_align(lbl, LV_ALIGN_LEFT_MID, 28, 0);
 
         lv_obj_t *val = make_label(row, items[i].value,
-                                    &lv_font_montserrat_14,
+                                    CN_FONT_BODY,
                                     lv_color_hex(items[i].color));
         lv_obj_align(val, LV_ALIGN_RIGHT_MID, 0, 0);
     }
@@ -322,17 +322,17 @@ static void build_chart(lv_obj_t *parent)
     lv_obj_align(card, LV_ALIGN_TOP_LEFT, 16, 316);
     lv_obj_set_style_pad_all(card, 14, 0);
 
-    lv_obj_t *title = make_label(card, "CPU & RAM History",
-                                  &lv_font_montserrat_14, C_SUBTEXT);
+    lv_obj_t *title = make_label(card, "CPU & 内存历史曲线",
+                                  CN_FONT_BODY, C_SUBTEXT);
     lv_obj_align(title, LV_ALIGN_TOP_LEFT, 0, 0);
 
     /* 图例 */
-    lv_obj_t *leg_cpu = make_label(card, "─ CPU",
-                                    &lv_font_montserrat_12, C_ORANGE);
+    lv_obj_t *leg_cpu = make_label(card, "─ 处理器",
+                                    CN_FONT_BODY, C_ORANGE);
     lv_obj_align(leg_cpu, LV_ALIGN_TOP_RIGHT, -70, 0);
 
-    lv_obj_t *leg_ram = make_label(card, "─ RAM",
-                                    &lv_font_montserrat_12, C_ACCENT);
+    lv_obj_t *leg_ram = make_label(card, "─ 内存",
+                                    CN_FONT_BODY, C_ACCENT);
     lv_obj_align(leg_ram, LV_ALIGN_TOP_RIGHT, 0, 0);
 
     /* 折线图控件 */
@@ -385,7 +385,7 @@ static void build_storage_panel(lv_obj_t *parent)
     lv_obj_align(card, LV_ALIGN_TOP_RIGHT, -16, 316);
     lv_obj_set_style_pad_all(card, 20, 0);
 
-    make_label(card, "Storage", &lv_font_montserrat_16, C_TEXT);
+    make_label(card, "存储空间", CN_FONT_TITLE, C_TEXT);
 
     static const struct {
         const char *name;
@@ -393,20 +393,20 @@ static void build_storage_panel(lv_obj_t *parent)
         uint32_t    color;
         int32_t     y;
     } drives[] = {
-        { "SSD System",  67, 0x58a6ff, 34 },
-        { "HDD Media",   42, 0x3fb950, 80 },
-        { "SD Card  ",   88, 0xf85149, 126 },
+        { "固态硬盘",  67, 0x58a6ff, 34 },
+        { "机械硬盘",   42, 0x3fb950, 80 },
+        { "SD 卡",   88, 0xf85149, 126 },
     };
 
     for (int i = 0; i < 3; i++) {
         lv_obj_t *name = make_label(card, drives[i].name,
-                                     &lv_font_montserrat_12, C_SUBTEXT);
+                                     CN_FONT_BODY, C_SUBTEXT);
         lv_obj_align(name, LV_ALIGN_TOP_LEFT, 0, drives[i].y);
 
         char pct[8];
         lv_snprintf(pct, sizeof(pct), "%"LV_PRId32"%%", drives[i].used);
         lv_obj_t *val = make_label(card, pct,
-                                    &lv_font_montserrat_12,
+                                    CN_FONT_BODY,
                                     lv_color_hex(drives[i].color));
         lv_obj_align(val, LV_ALIGN_TOP_RIGHT, 0, drives[i].y);
 
@@ -449,11 +449,11 @@ static void build_controls(lv_obj_t *parent)
         bool        on;
         uint32_t    color;
     } controls[] = {
-        { LV_SYMBOL_WIFI,      "Wi-Fi",         true,  0x58a6ff },
-        { LV_SYMBOL_BLUETOOTH, "Bluetooth",      true,  0xa371f7 },
-        { LV_SYMBOL_EYE_OPEN,  "Night Mode",     true,  0x3fb950 },
-        { LV_SYMBOL_BELL,      "Notifications",  false, 0xd29922 },
-        { LV_SYMBOL_VOLUME_MAX,"Sound",          true,  0x58a6ff },
+        { LV_SYMBOL_WIFI,      "无线网络",         true,  0x58a6ff },
+        { LV_SYMBOL_BLUETOOTH, "蓝牙",      true,  0xa371f7 },
+        { LV_SYMBOL_EYE_OPEN,  "夜间模式",     true,  0x3fb950 },
+        { LV_SYMBOL_BELL,      "通知",  false, 0xd29922 },
+        { LV_SYMBOL_VOLUME_MAX,"声音",          true,  0x58a6ff },
     };
 
     for (int i = 0; i < 5; i++) {
@@ -475,12 +475,12 @@ static void build_controls(lv_obj_t *parent)
                                    LV_STATE_CHECKED | LV_PART_INDICATOR);
 
         lv_obj_t *icon = make_label(col, controls[i].icon,
-                                     &lv_font_montserrat_12,
+                                     CN_FONT_BODY,
                                      lv_color_hex(controls[i].color));
         (void)icon;
 
         lv_obj_t *lbl = make_label(col, controls[i].name,
-                                    &lv_font_montserrat_12, C_SUBTEXT);
+                                    CN_FONT_BODY, C_SUBTEXT);
         (void)lbl;
     }
 }
@@ -510,6 +510,7 @@ static lv_obj_t *create_stage_card(lv_obj_t *parent, const char *step,
     lv_obj_clear_flag(badge, LV_OBJ_FLAG_SCROLLABLE);
 
     lv_obj_t *badge_label = make_label(badge, step, CN_FONT_BODY, C_TEXT);
+    (void)badge_label;
     lv_obj_center(badge_label);
 
     lv_obj_t *title_label = make_wrap_label(card, title, CN_FONT_TITLE, C_TEXT, text_w);
@@ -518,7 +519,7 @@ static lv_obj_t *create_stage_card(lv_obj_t *parent, const char *step,
     lv_obj_t *summary_label = make_wrap_label(card, summary, CN_FONT_BODY, C_SUBTEXT, text_w);
     lv_obj_align(summary_label, LV_ALIGN_TOP_LEFT, 0, 112);
 
-    lv_obj_t *topics_title = make_label(card, "What to learn", CN_FONT_BODY, accent);
+    lv_obj_t *topics_title = make_label(card, "学习内容", CN_FONT_BODY, accent);
     lv_obj_align(topics_title, LV_ALIGN_TOP_LEFT, 0, 206);
 
     lv_obj_t *topics_label = make_wrap_label(card, topics, CN_FONT_BODY, C_TEXT, text_w);
@@ -530,7 +531,7 @@ static lv_obj_t *create_stage_card(lv_obj_t *parent, const char *step,
     lv_obj_set_style_bg_color(btn, accent, 0);
     lv_obj_add_event_cb(btn, cb, LV_EVENT_CLICKED, NULL);
 
-    lv_obj_t *btn_label = make_label(btn, "Open chapter", CN_FONT_BODY, C_TEXT);
+    lv_obj_t *btn_label = make_label(btn, "进入章节", CN_FONT_BODY, C_TEXT);
     lv_obj_center(btn_label);
 
     return card;
@@ -554,7 +555,7 @@ static void add_overlay_home_button(void)
     lv_obj_set_style_shadow_width(g_overlay_btn, 12, 0);
     lv_obj_add_event_cb(g_overlay_btn, back_to_home_cb, LV_EVENT_CLICKED, NULL);
 
-    lv_obj_t *label = make_label(g_overlay_btn, "Back to home", CN_FONT_BODY, C_TEXT);
+    lv_obj_t *label = make_label(g_overlay_btn, "返回主页", CN_FONT_BODY, C_TEXT);
     lv_obj_center(label);
 }
 
@@ -670,7 +671,7 @@ static void add_example_entry(lv_obj_t *list, const char *icon,
     lv_obj_add_event_cb(btn, show_example_cb, LV_EVENT_CLICKED,
                         (void *)(uintptr_t)id);
 
-    lv_obj_t *desc = make_wrap_label(btn, summary, &lv_font_montserrat_12,
+    lv_obj_t *desc = make_wrap_label(btn, summary, CN_FONT_BODY,
                                      C_SUBTEXT, 680);
     lv_obj_align(desc, LV_ALIGN_BOTTOM_LEFT, 42, -6);
 }
@@ -693,14 +694,14 @@ static void show_examples_hub(void)
 
     lv_obj_t *title = make_wrap_label(
         hero,
-        "Official examples: start from the smallest LVGL building blocks",
+        "官方示例：LVGL 基础组件",
         CN_FONT_TITLE, C_TEXT, 1180);
     lv_obj_align(title, LV_ALIGN_TOP_LEFT, 0, 0);
 
     lv_obj_t *summary = make_wrap_label(
         hero,
-        "These examples come from LVGL official examples/widgets and are better suited for beginners. "
-        "Open them one by one before moving on to the widgets demo and larger project screens.",
+        "这些示例来自 LVGL 官方目录，适合初学者。"
+        "按顺序逐个打开，然后进入控件演示。",
         CN_FONT_BODY, C_SUBTEXT, 1180);
     lv_obj_align(summary, LV_ALIGN_TOP_LEFT, 0, 40);
 
@@ -716,28 +717,28 @@ static void show_examples_hub(void)
     lv_obj_set_style_border_width(list, 0, 0);
     lv_obj_set_style_pad_row(list, 10, 0);
 
-    add_example_entry(list, LV_SYMBOL_EDIT, "lv_example_label_1",
-                      "Start with basic text rendering, alignment and style usage.", EXAMPLE_LABEL_1);
-    add_example_entry(list, LV_SYMBOL_OK, "lv_example_button_1",
-                      "Learn how a simple clickable button is created and styled.", EXAMPLE_BUTTON_1);
-    add_example_entry(list, LV_SYMBOL_SETTINGS, "lv_example_bar_1",
-                      "See the simplest progress bar setup before moving to richer widgets.", EXAMPLE_BAR_1);
-    add_example_entry(list, LV_SYMBOL_REFRESH, "lv_example_slider_1",
-                      "Understand value input and indicator updates with a basic slider.", EXAMPLE_SLIDER_1);
-    add_example_entry(list, LV_SYMBOL_CLOSE, "lv_example_checkbox_1",
-                      "Review boolean choices with a single checkbox example.", EXAMPLE_CHECKBOX_1);
-    add_example_entry(list, LV_SYMBOL_POWER, "lv_example_switch_1",
-                      "Compare a mobile-style on/off switch with checkbox behavior.", EXAMPLE_SWITCH_1);
-    add_example_entry(list, LV_SYMBOL_DOWN, "lv_example_dropdown_1",
-                      "Learn compact option selection with a dropdown list.", EXAMPLE_DROPDOWN_1);
-    add_example_entry(list, LV_SYMBOL_KEYBOARD, "lv_example_textarea_1",
-                      "Practice basic text input before looking at more complex forms.", EXAMPLE_TEXTAREA_1);
-    add_example_entry(list, LV_SYMBOL_LIST, "lv_example_list_1",
-                      "See how LVGL organizes multiple actions into a scrollable list.", EXAMPLE_LIST_1);
-    add_example_entry(list, LV_SYMBOL_IMAGE, "lv_example_chart_1",
-                      "Understand the first chart example before visiting the dashboard.", EXAMPLE_CHART_1);
-    add_example_entry(list, LV_SYMBOL_DIRECTORY, "lv_example_tabview_1",
-                      "Finish with tabs to prepare for more complex multi-panel screens.", EXAMPLE_TABVIEW_1);
+    add_example_entry(list, LV_SYMBOL_EDIT, "标签示例",
+                      "基础文本、对齐和样式。", EXAMPLE_LABEL_1);
+    add_example_entry(list, LV_SYMBOL_OK, "按钮示例",
+                      "创建和设置按钮样式。", EXAMPLE_BUTTON_1);
+    add_example_entry(list, LV_SYMBOL_SETTINGS, "进度条示例",
+                      "进度条配置。", EXAMPLE_BAR_1);
+    add_example_entry(list, LV_SYMBOL_REFRESH, "滑块示例",
+                      "数值输入和指示器。", EXAMPLE_SLIDER_1);
+    add_example_entry(list, LV_SYMBOL_CLOSE, "复选框示例",
+                      "布尔选择。", EXAMPLE_CHECKBOX_1);
+    add_example_entry(list, LV_SYMBOL_POWER, "开关示例",
+                      "开关和复选框对比。", EXAMPLE_SWITCH_1);
+    add_example_entry(list, LV_SYMBOL_DOWN, "下拉列表",
+                      "紧凑选项选择。", EXAMPLE_DROPDOWN_1);
+    add_example_entry(list, LV_SYMBOL_KEYBOARD, "文本区域",
+                      "基础文本输入。", EXAMPLE_TEXTAREA_1);
+    add_example_entry(list, LV_SYMBOL_LIST, "列表示例",
+                      "多操作滚动列表。", EXAMPLE_LIST_1);
+    add_example_entry(list, LV_SYMBOL_IMAGE, "图表示例",
+                      "图表示例。", EXAMPLE_CHART_1);
+    add_example_entry(list, LV_SYMBOL_DIRECTORY, "标签页示例",
+                      "多面板界面。", EXAMPLE_TABVIEW_1);
 }
 
 static void show_tutorial_home(void)
@@ -756,27 +757,26 @@ static void show_tutorial_home(void)
 
     lv_obj_t *title = make_wrap_label(
         hero,
-        "LVGL tutorial path: learn from official examples to demos and full applications",
+        "LVGL 学习路线：官方示例到演示",
         CN_FONT_TITLE, C_TEXT, 920);
     lv_obj_align(title, LV_ALIGN_TOP_LEFT, 0, 0);
 
     lv_obj_t *summary = make_wrap_label(
         hero,
-        "This home page starts from official beginner-friendly examples, then moves to the widgets demo, "
-        "the dashboard in this repository, and finally the music demo.",
+        "从官方简单示例开始，然后是控件演示、"
+        "仪表板，最后是音乐演示。",
         CN_FONT_BODY, C_SUBTEXT, 920);
     lv_obj_align(summary, LV_ALIGN_TOP_LEFT, 0, 42);
 
     lv_obj_t *tip = make_wrap_label(
         hero,
-        "Notes in README and source code are written in Simplified Chinese. Widget names stay in English "
-        "so they match the official LVGL documentation.",
+        "README 和源码注释使用中文。控件名保持英文。",
         CN_FONT_BODY, C_ACCENT, 920);
     lv_obj_align(tip, LV_ALIGN_TOP_LEFT, 0, 100);
 
     lv_obj_t *path = make_wrap_label(
         hero,
-        "Path: 01 Examples -> 02 Widgets -> 03 Dashboard -> 04 Music",
+        "01 示例 02 控件 03 仪表 04 音乐",
         CN_FONT_BODY, C_TEXT, 240);
     lv_obj_align(path, LV_ALIGN_TOP_RIGHT, 0, 18);
 
@@ -793,34 +793,34 @@ static void show_tutorial_home(void)
 
     create_stage_card(
         cards,
-        "Chapter 1: Examples",
-        "Official examples: beginner-friendly single-widget entry points",
-        "Start from small examples in LVGL examples/widgets before opening the larger demos.",
-        "Focus examples: Label, Button, Bar, Slider, Checkbox, Switch, Dropdown, Textarea, List, Chart, Tabview.",
+        "第1节：示例",
+        "官方示例：初学者单控件入门",
+        "打开大型演示前，先学习小示例。",
+        "重点：标签、按钮、进度条、滑块、开关、列表、图表。",
         show_examples_cb, C_ACCENT);
 
     create_stage_card(
         cards,
-        "Chapter 2: Widgets demo",
-        "Official widgets demo: survey the broader LVGL widget system",
-        "After the small examples, use the widgets demo to review many components in a more complete showcase.",
-        "Focus widgets: Arc, Roller, Keyboard, Table, Calendar, Menu, MsgBox, Spinner, Spinbox, Tileview, Scale.",
+        "第2节：控件演示",
+        "控件演示：全面了解 LVGL 系统",
+        "完成小示例后，在控件演示中了解各种组件。",
+        "重点：圆弧、滚轮、键盘、表格、日历、菜单。",
         show_widgets_cb, C_ORANGE);
 
     create_stage_card(
         cards,
-        "Chapter 3: Dashboard",
-        "Custom dashboard: learn Flex, charts, timers and animations",
-        "Study how multiple controls are combined into one dense information dashboard.",
-        "Key topics: card layout, Arc gauges, Chart history view, Bar progress, Switch control groups, status panels, timer refresh and enter animations.",
+        "第3节：仪表板",
+        "仪表板：Flex 布局、图表、定时器",
+        "将多个控件组合成信息密集的仪表板。",
+        "核心：布局、圆弧、图表、进度条、开关、定时器、动画。",
         show_dashboard_cb, C_GREEN);
 
     create_stage_card(
         cards,
-        "Chapter 4: Music app",
-        "Official music demo: inspect a complete app-level UI",
-        "Finish with the music player demo to see page hierarchy, content composition and richer application flows.",
-        "Key topics: complex layouts, page hierarchy, list and media controls, animation rhythm, unified theme and full application structure.",
+        "第4节：音乐",
+        "音乐演示：完整应用级界面",
+        "了解页面层级、内容组合和应用流程。",
+        "核心：布局、页面、列表、媒体、动画、主题。",
         show_music_cb, C_PURPLE);
 }
 

@@ -46,8 +46,8 @@ target_include_directories(lvgl_demo PRIVATE
     ${CMAKE_SOURCE_DIR}
 )
 
-# Link LVGL core + demos library
-target_link_libraries(lvgl_demo PRIVATE lvgl lvgl_demos)
+# Link LVGL core + demos/examples libraries
+target_link_libraries(lvgl_demo PRIVATE lvgl_examples lvgl lvgl_demos)
 
 # POSIX platforms need math and thread libraries
 if(UNIX AND NOT APPLE)

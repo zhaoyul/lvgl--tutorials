@@ -15,8 +15,10 @@
 #include "lvgl.h"
 #include "demos/widgets/lv_demo_widgets.h"
 #include "demos/music/lv_demo_music.h"
+#include "examples/widgets/lv_example_widgets.h"
 #include <time.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 /* ─── 配色方案 ──────────────────────────────────────────────────────────────
  * 参考 GitHub 深色主题，并增加更鲜明的强调色。                            */
@@ -40,6 +42,20 @@ static lv_chart_series_t *g_ser_ram = NULL;
 static lv_timer_t *g_clock_timer = NULL;
 static lv_timer_t *g_chart_timer = NULL;
 static lv_obj_t *g_overlay_btn   = NULL;
+
+typedef enum {
+    EXAMPLE_LABEL_1 = 0,
+    EXAMPLE_BUTTON_1,
+    EXAMPLE_BAR_1,
+    EXAMPLE_SLIDER_1,
+    EXAMPLE_CHECKBOX_1,
+    EXAMPLE_SWITCH_1,
+    EXAMPLE_DROPDOWN_1,
+    EXAMPLE_TEXTAREA_1,
+    EXAMPLE_LIST_1,
+    EXAMPLE_CHART_1,
+    EXAMPLE_TABVIEW_1,
+} tutorial_example_id_t;
 
 /* 教程页面保留官方英文控件命名，便于直接对照 LVGL 官网资料。 */
 #define CN_FONT_BODY  (&lv_font_montserrat_14)
@@ -476,7 +492,10 @@ static lv_obj_t *create_stage_card(lv_obj_t *parent, const char *step,
                                    const char *topics, lv_event_cb_t cb,
                                    lv_color_t accent)
 {
-    lv_obj_t *card = make_card(parent, 392, 500);
+    const int32_t card_w = 297;
+    const int32_t text_w = card_w - 44;
+
+    lv_obj_t *card = make_card(parent, card_w, 500);
     lv_obj_set_style_pad_all(card, 22, 0);
     lv_obj_set_style_bg_color(card, C_CARD2, 0);
 
@@ -492,16 +511,16 @@ static lv_obj_t *create_stage_card(lv_obj_t *parent, const char *step,
     lv_obj_t *badge_label = make_label(badge, step, CN_FONT_BODY, C_TEXT);
     lv_obj_center(badge_label);
 
-    lv_obj_t *title_label = make_wrap_label(card, title, CN_FONT_TITLE, C_TEXT, 348);
+    lv_obj_t *title_label = make_wrap_label(card, title, CN_FONT_TITLE, C_TEXT, text_w);
     lv_obj_align(title_label, LV_ALIGN_TOP_LEFT, 0, 56);
 
-    lv_obj_t *summary_label = make_wrap_label(card, summary, CN_FONT_BODY, C_SUBTEXT, 348);
+    lv_obj_t *summary_label = make_wrap_label(card, summary, CN_FONT_BODY, C_SUBTEXT, text_w);
     lv_obj_align(summary_label, LV_ALIGN_TOP_LEFT, 0, 112);
 
     lv_obj_t *topics_title = make_label(card, "What to learn", CN_FONT_BODY, accent);
     lv_obj_align(topics_title, LV_ALIGN_TOP_LEFT, 0, 206);
 
-    lv_obj_t *topics_label = make_wrap_label(card, topics, CN_FONT_BODY, C_TEXT, 348);
+    lv_obj_t *topics_label = make_wrap_label(card, topics, CN_FONT_BODY, C_TEXT, text_w);
     lv_obj_align(topics_label, LV_ALIGN_TOP_LEFT, 0, 238);
 
     lv_obj_t *btn = lv_button_create(card);
@@ -517,6 +536,7 @@ static lv_obj_t *create_stage_card(lv_obj_t *parent, const char *step,
 }
 
 static void show_tutorial_home(void);
+static void show_examples_hub(void);
 
 static void back_to_home_cb(lv_event_t *e)
 {
@@ -535,6 +555,63 @@ static void add_overlay_home_button(void)
 
     lv_obj_t *label = make_label(g_overlay_btn, "Back to home", CN_FONT_BODY, C_TEXT);
     lv_obj_center(label);
+}
+
+static void open_example_by_id(tutorial_example_id_t id)
+{
+    switch (id) {
+    case EXAMPLE_LABEL_1:
+        lv_example_label_1();
+        break;
+    case EXAMPLE_BUTTON_1:
+        lv_example_button_1();
+        break;
+    case EXAMPLE_BAR_1:
+        lv_example_bar_1();
+        break;
+    case EXAMPLE_SLIDER_1:
+        lv_example_slider_1();
+        break;
+    case EXAMPLE_CHECKBOX_1:
+        lv_example_checkbox_1();
+        break;
+    case EXAMPLE_SWITCH_1:
+        lv_example_switch_1();
+        break;
+    case EXAMPLE_DROPDOWN_1:
+        lv_example_dropdown_1();
+        break;
+    case EXAMPLE_TEXTAREA_1:
+        lv_example_textarea_1();
+        break;
+    case EXAMPLE_LIST_1:
+        lv_example_list_1();
+        break;
+    case EXAMPLE_CHART_1:
+        lv_example_chart_1();
+        break;
+    case EXAMPLE_TABVIEW_1:
+        lv_example_tabview_1();
+        break;
+    }
+}
+
+static void show_example_cb(lv_event_t *e)
+{
+    tutorial_example_id_t id =
+        (tutorial_example_id_t)(uintptr_t)lv_event_get_user_data(e);
+
+    reset_runtime_state();
+    lv_obj_t *scr = lv_screen_active();
+    lv_obj_clean(scr);
+    open_example_by_id(id);
+    add_overlay_home_button();
+}
+
+static void show_examples_cb(lv_event_t *e)
+{
+    (void)e;
+    show_examples_hub();
 }
 
 static void build_dashboard_demo(lv_obj_t *scr)
@@ -581,6 +658,85 @@ static void show_music_cb(lv_event_t *e)
     add_overlay_home_button();
 }
 
+static void add_example_entry(lv_obj_t *list, const char *icon,
+                              const char *title, const char *summary,
+                              tutorial_example_id_t id)
+{
+    lv_obj_t *btn = lv_list_add_button(list, icon, title);
+    lv_obj_set_height(btn, 72);
+    lv_obj_add_event_cb(btn, show_example_cb, LV_EVENT_CLICKED,
+                        (void *)(uintptr_t)id);
+
+    lv_obj_t *desc = make_wrap_label(btn, summary, &lv_font_montserrat_12,
+                                     C_SUBTEXT, 680);
+    lv_obj_align(desc, LV_ALIGN_BOTTOM_LEFT, 42, -6);
+}
+
+static void show_examples_hub(void)
+{
+    reset_runtime_state();
+
+    lv_obj_t *scr = lv_screen_active();
+    lv_obj_clean(scr);
+    lv_obj_set_style_bg_color(scr, C_BG, 0);
+    lv_obj_set_style_bg_opa(scr, LV_OPA_COVER, 0);
+    lv_obj_clear_flag(scr, LV_OBJ_FLAG_SCROLLABLE);
+
+    add_overlay_home_button();
+
+    lv_obj_t *hero = make_card(scr, 1248, 126);
+    lv_obj_align(hero, LV_ALIGN_TOP_MID, 0, 16);
+    lv_obj_set_style_pad_all(hero, 22, 0);
+
+    lv_obj_t *title = make_wrap_label(
+        hero,
+        "Official examples: start from the smallest LVGL building blocks",
+        CN_FONT_TITLE, C_TEXT, 1180);
+    lv_obj_align(title, LV_ALIGN_TOP_LEFT, 0, 0);
+
+    lv_obj_t *summary = make_wrap_label(
+        hero,
+        "These examples come from LVGL official examples/widgets and are better suited for beginners. "
+        "Open them one by one before moving on to the widgets demo and larger project screens.",
+        CN_FONT_BODY, C_SUBTEXT, 1180);
+    lv_obj_align(summary, LV_ALIGN_TOP_LEFT, 0, 40);
+
+    lv_obj_t *list_card = make_card(scr, 1248, 540);
+    lv_obj_align(list_card, LV_ALIGN_BOTTOM_MID, 0, -14);
+    lv_obj_set_style_pad_all(list_card, 18, 0);
+
+    lv_obj_t *list = lv_list_create(list_card);
+    lv_obj_set_size(list, LV_PCT(100), LV_PCT(100));
+    lv_obj_center(list);
+    lv_obj_set_style_bg_color(list, C_CARD, 0);
+    lv_obj_set_style_bg_opa(list, LV_OPA_TRANSP, 0);
+    lv_obj_set_style_border_width(list, 0, 0);
+    lv_obj_set_style_pad_row(list, 10, 0);
+
+    add_example_entry(list, LV_SYMBOL_EDIT, "lv_example_label_1",
+                      "Start with basic text rendering, alignment and style usage.", EXAMPLE_LABEL_1);
+    add_example_entry(list, LV_SYMBOL_OK, "lv_example_button_1",
+                      "Learn how a simple clickable button is created and styled.", EXAMPLE_BUTTON_1);
+    add_example_entry(list, LV_SYMBOL_SETTINGS, "lv_example_bar_1",
+                      "See the simplest progress bar setup before moving to richer widgets.", EXAMPLE_BAR_1);
+    add_example_entry(list, LV_SYMBOL_REFRESH, "lv_example_slider_1",
+                      "Understand value input and indicator updates with a basic slider.", EXAMPLE_SLIDER_1);
+    add_example_entry(list, LV_SYMBOL_CLOSE, "lv_example_checkbox_1",
+                      "Review boolean choices with a single checkbox example.", EXAMPLE_CHECKBOX_1);
+    add_example_entry(list, LV_SYMBOL_POWER, "lv_example_switch_1",
+                      "Compare a mobile-style on/off switch with checkbox behavior.", EXAMPLE_SWITCH_1);
+    add_example_entry(list, LV_SYMBOL_DOWN, "lv_example_dropdown_1",
+                      "Learn compact option selection with a dropdown list.", EXAMPLE_DROPDOWN_1);
+    add_example_entry(list, LV_SYMBOL_KEYBOARD, "lv_example_textarea_1",
+                      "Practice basic text input before looking at more complex forms.", EXAMPLE_TEXTAREA_1);
+    add_example_entry(list, LV_SYMBOL_LIST, "lv_example_list_1",
+                      "See how LVGL organizes multiple actions into a scrollable list.", EXAMPLE_LIST_1);
+    add_example_entry(list, LV_SYMBOL_IMAGE, "lv_example_chart_1",
+                      "Understand the first chart example before visiting the dashboard.", EXAMPLE_CHART_1);
+    add_example_entry(list, LV_SYMBOL_DIRECTORY, "lv_example_tabview_1",
+                      "Finish with tabs to prepare for more complex multi-panel screens.", EXAMPLE_TABVIEW_1);
+}
+
 static void show_tutorial_home(void)
 {
     reset_runtime_state();
@@ -597,14 +753,14 @@ static void show_tutorial_home(void)
 
     lv_obj_t *title = make_wrap_label(
         hero,
-        "LVGL tutorial path: learn UI from widgets to layouts and full applications",
+        "LVGL tutorial path: learn from official examples to demos and full applications",
         CN_FONT_TITLE, C_TEXT, 920);
     lv_obj_align(title, LV_ALIGN_TOP_LEFT, 0, 0);
 
     lv_obj_t *summary = make_wrap_label(
         hero,
-        "This home page connects the official widgets demo, the dashboard in this repository, "
-        "and the official music demo into one progressive learning path.",
+        "This home page starts from official beginner-friendly examples, then moves to the widgets demo, "
+        "the dashboard in this repository, and finally the music demo.",
         CN_FONT_BODY, C_SUBTEXT, 920);
     lv_obj_align(summary, LV_ALIGN_TOP_LEFT, 0, 42);
 
@@ -617,7 +773,7 @@ static void show_tutorial_home(void)
 
     lv_obj_t *path = make_wrap_label(
         hero,
-        "Path: 01 Widgets overview -> 02 Dashboard layout & animation -> 03 Music application",
+        "Path: 01 Examples -> 02 Widgets -> 03 Dashboard -> 04 Music",
         CN_FONT_BODY, C_TEXT, 240);
     lv_obj_align(path, LV_ALIGN_TOP_RIGHT, 0, 18);
 
@@ -627,32 +783,40 @@ static void show_tutorial_home(void)
     lv_obj_set_style_bg_opa(cards, LV_OPA_TRANSP, 0);
     lv_obj_set_style_border_width(cards, 0, 0);
     lv_obj_set_style_pad_all(cards, 0, 0);
-    lv_obj_set_style_pad_column(cards, 18, 0);
+    lv_obj_set_style_pad_column(cards, 16, 0);
     lv_obj_clear_flag(cards, LV_OBJ_FLAG_SCROLLABLE);
     lv_obj_set_layout(cards, LV_LAYOUT_FLEX);
     lv_obj_set_flex_flow(cards, LV_FLEX_FLOW_ROW);
 
     create_stage_card(
         cards,
-        "Chapter 1: Widgets",
-        "Official widgets demo: survey the most common LVGL components",
-        "Start from the official widget showcase and quickly understand how each widget looks and behaves.",
-        "Focus widgets: Button, Label, Bar, Slider, Switch, Checkbox, Dropdown, Roller, Textarea, Keyboard, List, Table, Calendar, Chart, Tabview, Tileview, Menu, MsgBox, Spinner, Spinbox, Scale.",
-        show_widgets_cb, C_ACCENT);
+        "Chapter 1: Examples",
+        "Official examples: beginner-friendly single-widget entry points",
+        "Start from small examples in LVGL examples/widgets before opening the larger demos.",
+        "Focus examples: Label, Button, Bar, Slider, Checkbox, Switch, Dropdown, Textarea, List, Chart, Tabview.",
+        show_examples_cb, C_ACCENT);
 
     create_stage_card(
         cards,
-        "Chapter 2: Layouts and data",
+        "Chapter 2: Widgets demo",
+        "Official widgets demo: survey the broader LVGL widget system",
+        "After the small examples, use the widgets demo to review many components in a more complete showcase.",
+        "Focus widgets: Arc, Roller, Keyboard, Table, Calendar, Menu, MsgBox, Spinner, Spinbox, Tileview, Scale.",
+        show_widgets_cb, C_ORANGE);
+
+    create_stage_card(
+        cards,
+        "Chapter 3: Dashboard",
         "Custom dashboard: learn Flex, charts, timers and animations",
-        "After the widgets overview, study how multiple controls are combined into one dense information dashboard.",
+        "Study how multiple controls are combined into one dense information dashboard.",
         "Key topics: card layout, Arc gauges, Chart history view, Bar progress, Switch control groups, status panels, timer refresh and enter animations.",
         show_dashboard_cb, C_GREEN);
 
     create_stage_card(
         cards,
-        "Chapter 3: Full application",
+        "Chapter 4: Music app",
         "Official music demo: inspect a complete app-level UI",
-        "Finally, study the music player demo to see page hierarchy, content composition and richer application flows.",
+        "Finish with the music player demo to see page hierarchy, content composition and richer application flows.",
         "Key topics: complex layouts, page hierarchy, list and media controls, animation rhythm, unified theme and full application structure.",
         show_music_cb, C_PURPLE);
 }

@@ -1,8 +1,8 @@
 /**
  * @file lv_conf.h
- * LVGL v9.2.2 configuration — SDL2 desktop display
+ * LVGL v9.2.2 配置文件：用于 SDL2 桌面端显示
  *
- * Place this file next to your CMakeLists.txt and point CMake to it with:
+ * 将此文件放在 CMakeLists.txt 同级目录，并通过下面参数传给 CMake：
  *   -DLV_CONF_PATH=/absolute/path/to/lv_conf.h
  */
 
@@ -16,7 +16,7 @@
    COLOR SETTINGS
  *====================*/
 
-/* 32-bit color (XRGB8888) — best for SDL2 hardware-accelerated rendering */
+/* 32 位色深（XRGB8888），适合 SDL2 桌面端渲染 */
 #define LV_COLOR_DEPTH 32
 
 /*=========================
@@ -34,7 +34,7 @@
 #define LV_LIMITS_INCLUDE       <limits.h>
 #define LV_STDARG_INCLUDE       <stdarg.h>
 
-/* 4 MB heap — plenty for complex UIs and font caches */
+/* 4 MB 堆内存，足够支撑复杂界面和字体缓存 */
 #define LV_MEM_SIZE (4 * 1024 * 1024U)
 
 /*====================
@@ -93,7 +93,7 @@
  * FEATURE CONFIGURATION
  *=======================*/
 
-/* Logging — enable for debugging */
+/* 日志：调试时可开启 */
 #define LV_USE_LOG 0
 
 /* Asserts */
@@ -106,7 +106,7 @@
 #define LV_ASSERT_HANDLER_INCLUDE <stdint.h>
 #define LV_ASSERT_HANDLER while(1);
 
-/* Debug overlays */
+/* 调试叠加层 */
 #define LV_USE_REFR_DEBUG        0
 #define LV_USE_LAYER_DEBUG       0
 #define LV_USE_PARALLEL_DRAW_DEBUG 0

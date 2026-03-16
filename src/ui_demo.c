@@ -493,10 +493,11 @@ static lv_obj_t *create_stage_card(lv_obj_t *parent, const char *step,
                                    lv_color_t accent)
 {
     const int32_t card_w = 297;
-    const int32_t text_w = card_w - 44;
+    const int32_t card_pad = 22;
+    const int32_t text_w = card_w - (card_pad * 2);
 
     lv_obj_t *card = make_card(parent, card_w, 500);
-    lv_obj_set_style_pad_all(card, 22, 0);
+    lv_obj_set_style_pad_all(card, card_pad, 0);
     lv_obj_set_style_bg_color(card, C_CARD2, 0);
 
     lv_obj_t *badge = lv_obj_create(card);
@@ -592,6 +593,8 @@ static void open_example_by_id(tutorial_example_id_t id)
         break;
     case EXAMPLE_TABVIEW_1:
         lv_example_tabview_1();
+        break;
+    default:
         break;
     }
 }
